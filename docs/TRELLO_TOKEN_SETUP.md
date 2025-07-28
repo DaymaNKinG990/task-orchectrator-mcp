@@ -1,126 +1,125 @@
-# 🔑 Настройка Trello API токена
+# 🔑 Setting up Trello API Token
 
-## 🚨 Проблема с текущим токеном
+## 🚨 Current Token Issue
 
-Текущий токен `a8631b90227fdc7277b23cdfd0def6cf1e710c` недействителен. Ошибка: `invalid app token`.
+The current token is invalid. Error: `invalid app token`.
 
-## 🔧 Правильная настройка токена
+## 🔧 Proper Token Setup
 
-### Шаг 1: Получение API ключа
+### Step 1: Get API Key
 
-1. Перейдите на https://trello.com/app-key
-2. Войдите в свой аккаунт Trello
-3. Скопируйте **API Key** (это длинная строка символов)
+1. Go to https://trello.com/app-key
+2. Login to your Trello account
+3. Copy the **API Key** (this is a long string of characters)
 
-### Шаг 2: Получение токена
+### Step 2: Get Token
 
-**ВАЖНО:** Токен нужно генерировать правильно!
+**IMPORTANT:** The token needs to be generated properly!
 
-1. На той же странице https://trello.com/app-key
-2. Найдите секцию **"Token"**
-3. Нажмите кнопку **"Token"** (не копируйте старый токен!)
-4. Trello покажет вам **новый токен** - скопируйте его
-5. Токен должен быть длинным (обычно 64 символа)
+1. On the same page https://trello.com/app-key
+2. Find the **"Token"** section
+3. Click the **"Token"** button (don't copy the old token!)
+4. Trello will show you a **new token** - copy it
+5. The token should be long (usually 64 characters)
 
-### Шаг 3: Проверка токена
+### Step 3: Verify Token
 
-После получения нового токена, запустите диагностику:
+After getting the new token, run diagnostics:
 
 ```bash
 uv run python debug_trello_token.py
 ```
 
-### Шаг 4: Обновление конфигурации
+### Step 4: Update Configuration
 
-Обновите файл `c:\Users\xella\.cursor\mcp.json`:
+Update your `~/.cursor/mcp.json` file:
 
 ```json
 {
   "task-orchestrator": {
-    "command": "uv",
-    "args": ["run", "task-orchectrator-mcp"],
-    "cwd": "C:\\Users\\xella\\PycharmProjects\\AiCheat2Shooter\\task-orchectrator-mcp",
+    "command": "npx",
+    "args": ["@daymanking990/task-orchectrator-mcp"],
     "env": {
-      "TRELLO_API_KEY": "ваш_новый_api_ключ",
-      "TRELLO_TOKEN": "ваш_новый_токен",
-      "TRELLO_WORKING_BOARD_ID": "9hp09hXC"
+      "TRELLO_API_KEY": "your_new_api_key",
+      "TRELLO_TOKEN": "your_new_token",
+      "TRELLO_WORKING_BOARD_ID": "your_board_id"
     }
   }
 }
 ```
 
-## 🔍 Возможные причины проблемы
+## 🔍 Possible Causes of the Problem
 
-### 1. Неправильное копирование токена
-- Убедитесь, что скопировали весь токен
-- Проверьте, что нет лишних пробелов
+### 1. Incorrect Token Copying
+- Make sure you copied the entire token
+- Check that there are no extra spaces
 
-### 2. Токен устарел
-- Токены могут истекать
-- Генерируйте новый токен
+### 2. Token Expired
+- Tokens can expire
+- Generate a new token
 
-### 3. Неправильные права доступа
-- Убедитесь, что у токена есть права на чтение/запись досок
+### 3. Incorrect Access Rights
+- Make sure the token has read/write permissions for boards
 
-### 4. Проблемы с аккаунтом
-- Проверьте, что аккаунт активен
-- Убедитесь, что доска доступна вашему аккаунту
+### 4. Account Issues
+- Check that the account is active
+- Make sure the board is accessible to your account
 
-## 🧪 Тестирование
+## 🧪 Testing
 
-После обновления токена:
+After updating the token:
 
-1. **Запустите диагностику:**
+1. **Run diagnostics:**
    ```bash
    uv run python debug_trello_token.py
    ```
 
-2. **Проверьте статус системы:**
+2. **Check system status:**
    ```
-   "Покажи статус системы"
-   ```
-
-3. **Создайте тестовую задачу:**
-   ```
-   "Создай задачу: Тест Trello - Проверка интеграции"
+   "Show system status"
    ```
 
-## 📋 Ожидаемый результат
+3. **Create a test task:**
+   ```
+   "Create task: Test Trello - Check integration"
+   ```
 
-При правильной настройке вы должны увидеть:
+## 📋 Expected Result
+
+With proper setup, you should see:
 
 ```
 ✅ Token is valid!
-User: Ваше Имя
-Username: ваш_username
+User: Your Name
+Username: your_username
 
 ✅ Found X boards:
-  - AiCheat2Shooters (ID: 9hp09hXC)
+  - Your Board Name (ID: your_board_id)
 
-✅ Target board found: AiCheat2Shooters
+✅ Target board found: Your Board Name
 
 ✅ py-trello library works!
 Found X boards
-✅ Target board found via py-trello: AiCheat2Shooters
+✅ Target board found via py-trello: Your Board Name
 ```
 
-## 🚨 Если проблема остается
+## 🚨 If the Problem Persists
 
-1. **Попробуйте другой браузер** для получения токена
-2. **Очистите кэш браузера**
-3. **Проверьте, что доска существует** и доступна
-4. **Создайте новую доску** для тестирования
-5. **Обратитесь в поддержку Trello** если проблема системная
+1. **Try a different browser** to get the token
+2. **Clear browser cache**
+3. **Check that the board exists** and is accessible
+4. **Create a new board** for testing
+5. **Contact Trello support** if it's a systemic issue
 
-## 💡 Альтернативное решение
+## 💡 Alternative Solution
 
-Если Trello не работает, система будет использовать **локальное сохранение**:
+If Trello doesn't work, the system will use **local storage**:
 
-- Задачи сохраняются в `tasks_backup.json`
-- Переходы сохраняются в `transitions_backup.json`
-- Система работает полностью автономно
-- При восстановлении подключения к Trello можно синхронизировать данные
+- Tasks are saved in `tasks_backup.json`
+- Transitions are saved in `transitions_backup.json`
+- The system works completely offline
+- When Trello connection is restored, data can be synchronized
 
-## ✅ Готово!
+## ✅ Done!
 
-После правильной настройки токена система будет полностью интегрирована с Trello! 
+After proper token setup, the system will be fully integrated with Trello! 

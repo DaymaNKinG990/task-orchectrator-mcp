@@ -56,11 +56,23 @@ async function installDependencies() {
 function runServer() {
     console.log('🚀 Starting Task Orchestrator MCP Server...');
     
+    // Log environment variables for debugging
+    console.log('Environment variables:');
+    console.log('TRELLO_API_KEY:', process.env.TRELLO_API_KEY ? 'SET' : 'NOT SET');
+    console.log('TRELLO_TOKEN:', process.env.TRELLO_TOKEN ? 'SET' : 'NOT SET');
+    console.log('TRELLO_WORKING_BOARD_ID:', process.env.TRELLO_WORKING_BOARD_ID ? 'SET' : 'NOT SET');
+    
     // Run the Python server directly instead of as a module to avoid import conflicts
     const serverProcess = spawn('uv', ['run', 'python', pythonServerPath], {
         cwd: packageDir,
         stdio: 'inherit',
-        env: { ...process.env }
+        env: { 
+            ...process.env,
+            // Ensure these environment variables are explicitly passed
+            TRELLO_API_KEY: process.env.TRELLO_API_KEY,
+            TRELLO_TOKEN: process.env.TRELLO_TOKEN,
+            TRELLO_WORKING_BOARD_ID: process.env.TRELLO_WORKING_BOARD_ID
+        }
     });
     
     serverProcess.on('close', (code) => {

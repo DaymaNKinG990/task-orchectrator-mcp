@@ -1,126 +1,126 @@
-# Сборка и публикация MCP сервера
+# Building and Publishing MCP Server
 
-Это руководство описывает процесс сборки и публикации MCP сервера `@daymanking990/task-orchectrator-mcp` как npm пакета для использования в других проектах.
+This guide describes the process of building and publishing the MCP server `@daymanking990/task-orchectrator-mcp` as an npm package for use in other projects.
 
-## Предварительные требования
+## Prerequisites
 
-### 1. Установка инструментов
+### 1. Installing tools
 
 ```bash
-# Установка Node.js и npm (если еще не установлены)
-# Скачайте с https://nodejs.org/
+# Install Node.js and npm (if not already installed)
+# Download from https://nodejs.org/
 
-# Установка uv для Python зависимостей
+# Install uv for Python dependencies
 pip install uv
 
-# Проверка версий
+# Check versions
 node --version
 npm --version
 uv --version
 ```
 
-### 2. Настройка npm аккаунта
+### 2. Setting up npm account
 
-1. Создайте аккаунт на [npmjs.com](https://www.npmjs.com/signup)
-2. Войдите в npm в терминале:
+1. Create an account on [npmjs.com](https://www.npmjs.com/signup)
+2. Login to npm in terminal:
 ```bash
 npm login
 ```
-3. Создайте организацию (опционально):
+3. Create organization (optional):
 ```bash
 npm org create daymanking990
 ```
 
-## Локальная сборка и тестирование
+## Local build and testing
 
-### 1. Проверка проекта
+### 1. Project verification
 
 ```bash
-# Проверка синтаксиса Python
+# Check Python syntax
 python -m py_compile src/task_orchectrator_mcp/server.py
 
-# Проверка зависимостей
+# Check dependencies
 uv sync
 
-# Тестирование сервера
+# Test server
 uv run python -m task_orchectrator_mcp.server
 ```
 
-### 2. Тестирование npm пакета локально
+### 2. Test npm package locally
 
 ```bash
-# Создание локального пакета
+# Create local package
 npm pack
 
-# Установка пакета глобально для тестирования
-npm install -g ./daymanking990-task-orchectrator-mcp-0.2.0.tgz
+# Install package globally for testing
+npm install -g ./daymanking990-task-orchectrator-mcp-0.3.0.tgz
 
-# Тестирование команды
+# Test command
 task-orchectrator-mcp
 
-# Удаление тестовой установки
+# Remove test installation
 npm uninstall -g @daymanking990/task-orchectrator-mcp
 ```
 
-### 3. Тестирование через npx
+### 3. Test via npx
 
 ```bash
-# Запуск через npx
-npx ./daymanking990-task-orchectrator-mcp-0.2.0.tgz
+# Run via npx
+npx ./daymanking990-task-orchectrator-mcp-0.3.0.tgz
 ```
 
-## Публикация на npm
+## Publishing to npm
 
-### 1. Подготовка к публикации
+### 1. Prepare for publishing
 
 ```bash
-# Проверка package.json
+# Check package.json
 npm run test
 
-# Проверка содержимого пакета
+# Check package contents
 npm pack --dry-run
 
-# Проверка метаданных
+# Check metadata
 npm view @daymanking990/task-orchectrator-mcp
 ```
 
-### 2. Публикация
+### 2. Publishing
 
 ```bash
-# Публикация на npm
+# Publish to npm
 npm publish
 
-# Для публикации в организацию (если используете scope)
+# For publishing to organization (if using scope)
 npm publish --access public
 ```
 
-### 3. Проверка публикации
+### 3. Verify publishing
 
 ```bash
-# Проверка на npmjs.com
+# Check on npmjs.com
 # https://www.npmjs.com/package/@daymanking990/task-orchectrator-mcp
 
-# Установка с npm
+# Install from npm
 npm install -g @daymanking990/task-orchectrator-mcp
 
-# Тестирование установленного пакета
+# Test installed package
 task-orchectrator-mcp
 ```
 
-## Использование в других проектах
+## Using in other projects
 
-### 1. Установка как зависимость
+### 1. Install as dependency
 
 ```bash
-# В новом проекте
+# In new project
 npm install @daymanking990/task-orchectrator-mcp
 ```
 
-### 2. Использование в MCP клиентах
+### 2. Use in MCP clients
 
 #### Claude Desktop
 
-Добавьте в `claude_desktop_config.json`:
+Add to `claude_desktop_config.json`:
 
 ```json
 {
@@ -138,21 +138,21 @@ npm install @daymanking990/task-orchectrator-mcp
 }
 ```
 
-#### Другие MCP клиенты
+#### Other MCP clients
 
 ```bash
-# Прямой запуск
+# Direct run
 npx @daymanking990/task-orchectrator-mcp
 
-# С переменными окружения
+# With environment variables
 TRELLO_API_KEY=your_key TRELLO_TOKEN=your_token npx @daymanking990/task-orchectrator-mcp
 ```
 
-## Автоматизация с GitHub Actions
+## Automation with GitHub Actions
 
-### 1. Создание workflow
+### 1. Create workflow
 
-Создайте `.github/workflows/publish-npm.yml`:
+Create `.github/workflows/publish-npm.yml`:
 
 ```yaml
 name: Publish to npm
@@ -219,88 +219,88 @@ jobs:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 ```
 
-### 2. Настройка секретов
+### 2. Configure secrets
 
-В настройках GitHub репозитория добавьте:
-- `NPM_TOKEN` - npm access token (создайте на https://www.npmjs.com/settings/tokens)
+In GitHub repository settings, add:
+- `NPM_TOKEN` - npm access token (create at https://www.npmjs.com/settings/tokens)
 
-## Версионирование
+## Versioning
 
-### 1. Обновление версии
+### 1. Update version
 
 ```bash
-# В package.json измените версию
-"version": "0.2.1"  # или следующая версия
+# In package.json change version
+"version": "0.3.1"  # or next version
 
-# Также обновите версию в pyproject.toml и __init__.py
+# Also update version in pyproject.toml and __init__.py
 ```
 
-### 2. Создание релиза
+### 2. Create release
 
 ```bash
-# Создание тега
-git tag v0.2.1
-git push origin v0.2.1
+# Create tag
+git tag v0.3.1
+git push origin v0.3.1
 
-# Или через GitHub UI создайте новый релиз
+# Or create new release through GitHub UI
 ```
 
 ## Troubleshooting
 
-### Ошибки сборки
+### Build errors
 
 ```bash
-# Проверка Node.js и npm
+# Check Node.js and npm
 node --version
 npm --version
 
-# Очистка npm кэша
+# Clear npm cache
 npm cache clean --force
 
-# Проверка package.json
+# Check package.json
 npm run test
 ```
 
-### Ошибки публикации
+### Publishing errors
 
 ```bash
-# Проверка авторизации
+# Check authorization
 npm whoami
 
-# Проверка пакета перед публикацией
+# Check package before publishing
 npm pack --dry-run
 
-# Проверка метаданных
+# Check metadata
 npm view @daymanking990/task-orchectrator-mcp
 ```
 
-### Проблемы с установкой
+### Installation issues
 
 ```bash
-# Принудительная переустановка
+# Force reinstall
 npm install -g @daymanking990/task-orchectrator-mcp --force
 
-# Проверка установленных пакетов
+# Check installed packages
 npm list -g | grep task-orchectrator
 ```
 
-## Полезные команды
+## Useful commands
 
 ```bash
-# Просмотр информации о пакете
+# View package information
 npm view @daymanking990/task-orchectrator-mcp
 
-# Проверка совместимости
+# Check compatibility
 npx @daymanking990/task-orchectrator-mcp --help
 
-# Запуск с отладкой
+# Run with debugging
 DEBUG=* npx @daymanking990/task-orchectrator-mcp
 ```
 
-## Следующие шаги
+## Next steps
 
-1. **Документация**: Создайте документацию на npmjs.com или GitHub Pages
-2. **Тесты**: Добавьте unit тесты для повышения качества
-3. **CI/CD**: Настройте автоматические тесты и проверки качества кода
-4. **Мониторинг**: Настройте мониторинг загрузок и использования пакета
-5. **Обновления**: Настройте автоматические обновления зависимостей 
+1. **Documentation**: Create documentation on npmjs.com or GitHub Pages
+2. **Tests**: Add unit tests to improve quality
+3. **CI/CD**: Set up automatic tests and code quality checks
+4. **Monitoring**: Set up monitoring for downloads and package usage
+5. **Updates**: Set up automatic dependency updates 

@@ -1,52 +1,52 @@
-# Быстрая публикация MCP сервера
+# Quick MCP Server Publishing
 
-## Предварительные требования
+## Prerequisites
 
-1. **npm аккаунт**: Создайте на [npmjs.com](https://www.npmjs.com/signup)
-2. **Вход в npm**: `npm login`
+1. **npm account**: Create at [npmjs.com](https://www.npmjs.com/signup)
+2. **npm login**: `npm login`
 3. **uv**: `pip install uv`
 
-## Быстрая публикация
+## Quick publishing
 
-### 1. Обновление версии
+### 1. Update version
 
-Обновите версию в трех файлах:
-- `package.json`: `"version": "0.2.1"`
-- `pyproject.toml`: `version = "0.2.1"`
-- `src/task_orchectrator_mcp/__init__.py`: `__version__ = "0.2.1"`
+Update version in three files:
+- `package.json`: `"version": "0.3.1"`
+- `pyproject.toml`: `version = "0.3.1"`
+- `src/task_orchectrator_mcp/__init__.py`: `__version__ = "0.3.1"`
 
-### 2. Тестирование
+### 2. Testing
 
 ```bash
-# Создание пакета
+# Create package
 npm pack
 
-# Тестирование локально
-npm install -g ./daymanking990-task-orchectrator-mcp-0.2.1.tgz
+# Test locally
+npm install -g ./daymanking990-task-orchectrator-mcp-0.3.1.tgz
 task-orchectrator-mcp
 
-# Удаление тестовой установки
+# Remove test installation
 npm uninstall -g @daymanking990/task-orchectrator-mcp
 ```
 
-### 3. Публикация
+### 3. Publishing
 
 ```bash
-# Публикация на npm
+# Publish to npm
 npm publish --access public
 ```
 
-### 4. Проверка
+### 4. Verification
 
 ```bash
-# Установка с npm
+# Install from npm
 npm install -g @daymanking990/task-orchectrator-mcp
 
-# Тестирование
+# Test
 task-orchectrator-mcp
 ```
 
-## Использование в mcp.json
+## Usage in mcp.json
 
 ```json
 {
@@ -64,6 +64,6 @@ task-orchectrator-mcp
 }
 ```
 
-## Автоматическая публикация
+## Automatic publishing
 
-Создайте GitHub релиз - пакет автоматически опубликуется на npm. 
+Create a GitHub release - package will automatically publish to npm. 

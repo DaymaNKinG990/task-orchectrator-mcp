@@ -1,52 +1,31 @@
 {
   "name": "@daymanking990/task-orchectrator-mcp",
-  "version": "0.2.2",
-  "description": "A role-based task orchestrator with three-tier Trello integration for MCP",
+  "version": "0.3.0",
+  "description": "A Model Context Protocol (MCP) server for task orchestration with role-based workflow management and Trello integration",
   "main": "bin/index.js",
   "bin": {
-    "task-orchectrator-mcp": "bin/index.js"
+    "task-orchectrator-mcp": "./bin/index.js"
   },
   "scripts": {
-    "start": "node bin/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
     "postinstall": "node scripts/postinstall.js"
   },
   "keywords": [
     "mcp",
-    "task-orchestration",
-    "trello",
-    "project-management",
+    "task-management",
+    "orchestration",
     "workflow",
+    "trello",
+    "ai",
     "model-context-protocol"
   ],
-  "author": "DaymaNKinG990 <xellaopromaster@yandex.ru>",
+  "author": "Dayman King <daymanking990@gmail.com>",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/DaymaNKinG990/task-orchectrator-mcp.git"
+    "url": "git+https://github.com/daymanking990/task-orchectrator-mcp.git"
   },
   "bugs": {
-    "url": "https://github.com/DaymaNKinG990/task-orchectrator-mcp/issues"
+    "url": "https://github.com/daymanking990/task-orchectrator-mcp/issues"
   },
-  "homepage": "https://github.com/DaymaNKinG990/task-orchectrator-mcp#readme",
-  "engines": {
-    "node": ">=16.0.0"
-  },
-  "dependencies": {
-    "child_process": "^1.0.2",
-    "fs": "^0.0.1-security",
-    "path": "^0.12.7"
-  },
-  "devDependencies": {
-    "prettier": "^3.0.0"
-  },
-  "files": [
-    "bin/",
-    "scripts/",
-    "src/",
-    "pyproject.toml",
-    "uv.lock",
-    "README.md",
-    "LICENSE"
-  ]
+  "homepage": "https://github.com/daymanking990/task-orchectrator-mcp#readme"
 }

@@ -1,22 +1,22 @@
-# 🌐 Публикация MCP сервера
+# 🌐 Publishing MCP Server
 
-## ✅ Ваш сервер уже опубликован!
+## ✅ Your server is already published!
 
-Ваш MCP сервер `@daymanking990/task-orchectrator-mcp@0.2.0` уже успешно опубликован на npm:
-- **npm пакет**: https://www.npmjs.com/package/@daymanking990/task-orchectrator-mcp
-- **Доступен для установки**: `npm install @daymanking990/task-orchectrator-mcp`
+Your MCP server `@daymanking990/task-orchectrator-mcp@0.3.0` is already successfully published on npm:
+- **npm package**: https://www.npmjs.com/package/@daymanking990/task-orchectrator-mcp
+- **Available for installation**: `npm install @daymanking990/task-orchectrator-mcp`
 
-## 📋 Как добавить сервер в официальный список MCP
+## 📋 How to add the server to the official MCP list
 
-### 1. Добавьте в официальный репозиторий
+### 1. Add to the official repository
 
-Создайте Pull Request в: https://github.com/modelcontextprotocol/servers
+Create a Pull Request in: https://github.com/modelcontextprotocol/servers
 
-1. **Форкните репозиторий**
-2. **Добавьте информацию** о вашем сервере в `README.md`
-3. **Следуйте формату** других серверов
+1. **Fork the repository**
+2. **Add information** about your server to `README.md`
+3. **Follow the format** of other servers
 
-### 2. Пример записи для README.md
+### 2. Example entry for README.md
 
 ```markdown
 ### Task Orchestrator MCP Server
@@ -28,56 +28,61 @@
 - **Author**: DaymaNKinG990
 ```
 
-### 3. Альтернативные способы распространения
+### 3. Alternative distribution methods
 
-#### A. Собственный веб-сайт
-Создайте страницу с документацией и инструкциями по установке
+#### A. Own website
+Create a page with documentation and installation instructions
 
 #### B. GitHub Pages
-Настройте GitHub Pages для вашего репозитория
+Set up GitHub Pages for your repository
 
-#### C. Социальные сети
-Поделитесь в сообществах MCP:
-- Discord MCP сервер
+#### C. Social networks
+Share in MCP communities:
+- Discord MCP server
 - GitHub Discussions
 - Reddit r/MCP
 
-## 🎯 Текущий статус
+## 🎯 Current status
 
-### ✅ Что готово:
-- ✅ npm пакет опубликован
-- ✅ Сервер протестирован и работает
-- ✅ Документация создана
-- ✅ Конфигурация для mcp.json готова
+### ✅ What's ready:
+- ✅ npm package published
+- ✅ Server tested and working
+- ✅ Documentation created
+- ✅ Configuration for mcp.json ready
 
-### 📝 Что можно сделать:
-- 📝 Добавить в официальный список серверов
-- 📝 Создать веб-страницу с документацией
-- 📝 Поделиться в сообществе MCP
+### 📝 What can be done:
+- 📝 Add to official server list
+- 📝 Create web page with documentation
+- 📝 Share in MCP community
 
-## 🔗 Полезные ссылки
+## 🔗 Useful links
 
-- **Ваш npm пакет**: https://www.npmjs.com/package/@daymanking990/task-orchectrator-mcp
-- **GitHub репозиторий**: https://github.com/DaymaNKinG990/task-orchectrator-mcp
-- **Официальный список серверов**: https://github.com/modelcontextprotocol/servers
-- **MCP документация**: https://modelcontextprotocol.io
+- **Your npm package**: https://www.npmjs.com/package/@daymanking990/task-orchectrator-mcp
+- **GitHub repository**: https://github.com/DaymaNKinG990/task-orchectrator-mcp
+- **Official server list**: https://github.com/modelcontextprotocol/servers
+- **MCP documentation**: https://modelcontextprotocol.io
 
-## 🎉 Заключение
+## 🎉 Conclusion
 
-**Ваш MCP сервер успешно опубликован и готов к использованию!**
+**Your MCP server is successfully published and ready to use!**
 
-Пользователи могут установить его командой:
+Users can install it with the command:
 ```bash
 npm install @daymanking990/task-orchectrator-mcp
 ```
 
-И использовать в `mcp.json`:
+And use it in `mcp.json`:
 ```json
 {
   "mcpServers": {
     "task-orchectrator": {
       "command": "npx",
-      "args": ["@daymanking990/task-orchectrator-mcp"]
+      "args": ["@daymanking990/task-orchectrator-mcp"],
+      "env": {
+        "TRELLO_API_KEY": "your_trello_api_key",
+        "TRELLO_TOKEN": "your_trello_token",
+        "TRELLO_WORKING_BOARD_ID": "your_trello_working_board_id"
+      }
     }
   }
 }

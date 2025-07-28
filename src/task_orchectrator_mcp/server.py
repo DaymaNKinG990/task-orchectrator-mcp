@@ -1,10 +1,28 @@
 import asyncio
 from datetime import datetime
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Set
 from enum import Enum
 import os
 import json
 import sys
+import logging
+
+# Configure logging for MCP server debugging
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.StreamHandler(sys.stderr),  # Log to stderr for MCP compatibility
+        logging.FileHandler('mcp_server_debug.log', mode='w', encoding='utf-8')  # Also log to file with UTF-8
+    ]
+)
+logger = logging.getLogger('task-orchectrator-mcp')
+
+# Log startup information
+logger.info("Task Orchestrator MCP Server starting...")
+logger.info(f"Python version: {sys.version}")
+logger.info(f"Working directory: {os.getcwd()}")
+logger.info(f"Environment variables: TRELLO_API_KEY={'SET' if os.getenv('TRELLO_API_KEY') else 'NOT SET'}, TRELLO_TOKEN={'SET' if os.getenv('TRELLO_TOKEN') else 'NOT SET'}")
 
 from mcp.server.models import InitializationOptions
 import mcp.types as types
@@ -12,12 +30,16 @@ from mcp.server import NotificationOptions, Server
 from pydantic import AnyUrl, BaseModel
 import mcp.server.stdio
 
+logger.info("MCP imports successful")
+
 # Trello integration
 try:
     from trello import TrelloClient
     TRELLO_AVAILABLE = True
-except ImportError:
+    logger.info("Trello library imported successfully")
+except ImportError as e:
     TRELLO_AVAILABLE = False
+    logger.warning(f"Trello library not available: {e}")
 
 class TaskStatus(str, Enum):
     TODO = "TODO"
@@ -25,6 +47,18 @@ class TaskStatus(str, Enum):
     REVIEW = "REVIEW"
     DONE = "DONE"
     BLOCKED = "BLOCKED"
+
+class Permission(str, Enum):
+    """Permissions that roles can have"""
+    CREATE_TASK = "create_task"
+    ASSIGN_TASK = "assign_task"
+    COMPLETE_TASK = "complete_task"
+    UPDATE_TASK = "update_task"
+    DELETE_TASK = "delete_task"
+    VIEW_ALL_TASKS = "view_all_tasks"
+    SWITCH_ROLE = "switch_role"
+    EXPORT_DATA = "export_data"
+    MANAGE_ROLES = "manage_roles"
 
 class RoleType(str, Enum):
     ORCHESTRATOR = "orchestrator"
@@ -37,6 +71,91 @@ class TrelloMode(str, Enum):
     NONE = "none"
     DIRECT_API = "direct_api"
     MCP = "mcp"
+
+class RolePermissions(BaseModel):
+    """Define permissions for each role"""
+    role: RoleType
+    permissions: Set[Permission]
+    description: str
+
+# Define role permissions
+ROLE_PERMISSIONS = {
+    RoleType.ORCHESTRATOR: RolePermissions(
+        role=RoleType.ORCHESTRATOR,
+        permissions={
+            Permission.CREATE_TASK,
+            Permission.ASSIGN_TASK,
+            Permission.COMPLETE_TASK,
+            Permission.UPDATE_TASK,
+            Permission.DELETE_TASK,
+            Permission.VIEW_ALL_TASKS,
+            Permission.SWITCH_ROLE,
+            Permission.EXPORT_DATA,
+            Permission.MANAGE_ROLES
+        },
+        description="Full system control - can manage all tasks and roles"
+    ),
+    RoleType.ARCHITECT: RolePermissions(
+        role=RoleType.ARCHITECT,
+        permissions={
+            Permission.CREATE_TASK,
+            Permission.ASSIGN_TASK,
+            Permission.COMPLETE_TASK,
+            Permission.UPDATE_TASK,
+            Permission.VIEW_ALL_TASKS,
+            Permission.EXPORT_DATA
+        },
+        description="Can create and manage tasks, but cannot delete or manage roles"
+    ),
+    RoleType.CODER: RolePermissions(
+        role=RoleType.CODER,
+        permissions={
+            Permission.COMPLETE_TASK,
+            Permission.UPDATE_TASK,
+            Permission.VIEW_ALL_TASKS
+        },
+        description="Can complete and update assigned tasks, view all tasks"
+    ),
+    RoleType.ANALYST: RolePermissions(
+        role=RoleType.ANALYST,
+        permissions={
+            Permission.CREATE_TASK,
+            Permission.COMPLETE_TASK,
+            Permission.UPDATE_TASK,
+            Permission.VIEW_ALL_TASKS,
+            Permission.EXPORT_DATA
+        },
+        description="Can create analysis tasks, complete and update tasks, export data"
+    ),
+    RoleType.DEVOPS: RolePermissions(
+        role=RoleType.DEVOPS,
+        permissions={
+            Permission.COMPLETE_TASK,
+            Permission.UPDATE_TASK,
+            Permission.VIEW_ALL_TASKS,
+            Permission.EXPORT_DATA
+        },
+        description="Can complete and update DevOps tasks, view all tasks, export data"
+    )
+}
+
+def has_permission(role: RoleType, permission: Permission) -> bool:
+    """Check if a role has a specific permission"""
+    if role not in ROLE_PERMISSIONS:
+        return False
+    return permission in ROLE_PERMISSIONS[role].permissions
+
+def get_role_permissions(role: RoleType) -> Set[Permission]:
+    """Get all permissions for a role"""
+    if role not in ROLE_PERMISSIONS:
+        return set()
+    return ROLE_PERMISSIONS[role].permissions.copy()
+
+def get_role_description(role: RoleType) -> str:
+    """Get description for a role"""
+    if role not in ROLE_PERMISSIONS:
+        return "Unknown role"
+    return ROLE_PERMISSIONS[role].description
 
 class Task(BaseModel):
     id: str
@@ -193,16 +312,19 @@ def init_trello_client():
     """Initialize Trello client if credentials are available"""
     global trello_client, trello_board, trello_mode
     
+    logger.info("Initializing Trello client...")
+    
     # First, check if MCP Trello server is available
+    logger.info("Checking MCP Trello server availability...")
     if check_mcp_trello_availability():
         trello_mode = TrelloMode.MCP
-        print("✅ MCP Trello server detected - using MCP integration", file=sys.stderr)
+        logger.info("MCP Trello server detected - using MCP integration")
         return True
     
     # If MCP not available, try direct API integration
     if not TRELLO_AVAILABLE:
         trello_mode = TrelloMode.NONE
-        print("⚠️ Trello integration not available - using local storage", file=sys.stderr)
+        logger.warning("Trello integration not available - using local storage")
         return False
     
     try:
@@ -210,29 +332,50 @@ def init_trello_client():
         token = os.getenv('TRELLO_TOKEN')
         board_id = os.getenv('TRELLO_WORKING_BOARD_ID')
         
-        if api_key and token and board_id:
+        # Check if credentials are placeholder values
+        placeholder_values = [
+            "your_trello_api_key_here",
+            "your_trello_token_here", 
+            "your_trello_board_id_here",
+            "",
+            None
+        ]
+        
+        has_valid_credentials = (
+            api_key and api_key not in placeholder_values and
+            token and token not in placeholder_values and
+            board_id and board_id not in placeholder_values
+        )
+        
+        logger.info(f"Trello credentials check: API_KEY={'SET' if api_key and api_key not in placeholder_values else 'NOT SET'}, TOKEN={'SET' if token and token not in placeholder_values else 'NOT SET'}, BOARD_ID={'SET' if board_id and board_id not in placeholder_values else 'NOT SET'}")
+        
+        if has_valid_credentials:
+            logger.info("Creating Trello client...")
             trello_client = TrelloClient(api_key=api_key, token=token)
             
             # Find the working board
+            logger.info("Fetching Trello boards...")
             boards = trello_client.list_boards()
+            logger.info(f"Found {len(boards)} boards")
+            
             for board in boards:
                 if board.id == board_id:
                     trello_board = board
                     trello_mode = TrelloMode.DIRECT_API
-                    print("✅ Direct Trello API integration initialized", file=sys.stderr)
+                    logger.info(f"Direct Trello API integration initialized for board: {board.name}")
                     return True
             
             trello_mode = TrelloMode.NONE
-            print("⚠️ Trello board not found - using local storage", file=sys.stderr)
+            logger.warning(f"Trello board {board_id} not found - using local storage")
             return False
         else:
             trello_mode = TrelloMode.NONE
-            print("⚠️ Trello credentials not configured - using local storage", file=sys.stderr)
+            logger.warning("Trello credentials not configured or using placeholder values - using local storage")
             return False
             
     except Exception as e:
         trello_mode = TrelloMode.NONE
-        print(f"❌ Trello initialization error: {e} - using local storage", file=sys.stderr)
+        logger.error(f"Trello initialization error: {e} - using local storage")
         return False
 
 async def create_trello_card_mcp(task: Task) -> Optional[str]:
@@ -444,7 +587,7 @@ async def handle_list_tools() -> list[types.Tool]:
     tools = [
         types.Tool(
             name="create_task",
-            description="Create a new task (only Orchestrator)",
+            description="Create a new task (Orchestrator, Architect, Analyst)",
             inputSchema={
                 "type": "object",
                 "properties": {
@@ -466,7 +609,7 @@ async def handle_list_tools() -> list[types.Tool]:
         ),
         types.Tool(
             name="assign_task",
-            description="Assign task to a specific role (only Orchestrator)",
+            description="Assign task to a specific role (Orchestrator, Architect)",
             inputSchema={
                 "type": "object",
                 "properties": {
@@ -494,7 +637,7 @@ async def handle_list_tools() -> list[types.Tool]:
         ),
         types.Tool(
             name="switch_role",
-            description="Switch to a different role (only Orchestrator)",
+            description="Switch to a different role (Orchestrator only)",
             inputSchema={
                 "type": "object",
                 "properties": {
@@ -556,6 +699,22 @@ async def handle_list_tools() -> list[types.Tool]:
                 "properties": {},
             },
         ),
+        types.Tool(
+            name="show_role_permissions",
+            description="Show current role permissions and capabilities",
+            inputSchema={
+                "type": "object",
+                "properties": {},
+            },
+        ),
+        types.Tool(
+            name="list_roles",
+            description="List all available roles with their permissions",
+            inputSchema={
+                "type": "object",
+                "properties": {},
+            },
+        ),
     ]
     
     # Add Trello-specific tools if available
@@ -587,10 +746,10 @@ async def handle_call_tool(
     
     try:
         if name == "create_task":
-            if current_role != RoleType.ORCHESTRATOR:
+            if not has_permission(current_role, Permission.CREATE_TASK):
                 return [types.TextContent(
                     type="text",
-                    text="❌ Error: Only Orchestrator can create tasks"
+                    text=f"❌ Error: Role {current_role.value} cannot create tasks. Required permission: {Permission.CREATE_TASK.value}"
                 )]
             
             title = arguments.get("title")
@@ -652,10 +811,10 @@ async def handle_call_tool(
             )]
         
         elif name == "assign_task":
-            if current_role != RoleType.ORCHESTRATOR:
+            if not has_permission(current_role, Permission.ASSIGN_TASK):
                 return [types.TextContent(
                     type="text",
-                    text="❌ Error: Only Orchestrator can assign tasks"
+                    text=f"❌ Error: Role {current_role.value} cannot assign tasks. Required permission: {Permission.ASSIGN_TASK.value}"
                 )]
             
             task_id = arguments.get("task_id")
@@ -790,10 +949,10 @@ async def handle_call_tool(
             )]
         
         elif name == "switch_role":
-            if current_role != RoleType.ORCHESTRATOR:
+            if not has_permission(current_role, Permission.SWITCH_ROLE):
                 return [types.TextContent(
                     type="text",
-                    text="❌ Error: Only Orchestrator can switch roles"
+                    text=f"❌ Error: Role {current_role.value} cannot switch roles. Required permission: {Permission.SWITCH_ROLE.value}"
                 )]
             
             role_name = arguments.get("role")
@@ -893,8 +1052,13 @@ async def handle_call_tool(
             trello_status = trello_status_map.get(trello_mode, "❌ Unknown")
             local_storage_status = "✅ Available" if os.path.exists(TASKS_FILE) else "❌ Not available"
             
+            # Get current role permissions
+            permissions = get_role_permissions(current_role)
+            permissions_list = ", ".join([perm.value for perm in sorted(permissions)])
+            
             status_text = f"""
 🎭 **Current Role**: {current_role.value}
+🔑 **Permissions**: {permissions_list}
 📊 **Total Tasks**: {len(tasks)}
 🔗 **Trello Mode**: {trello_status}
 💾 **Local Storage**: {local_storage_status}
@@ -977,6 +1141,36 @@ async def handle_call_tool(
                     text="❌ MCP Trello server is not available or inaccessible."
                 )]
         
+        elif name == "show_role_permissions":
+            permissions = get_role_permissions(current_role)
+            description = get_role_description(current_role)
+            
+            permissions_text = "\n".join([f"  - {perm.value}" for perm in sorted(permissions)])
+            
+            return [types.TextContent(
+                type="text",
+                text=f"🎭 **Current Role**: {current_role.value}\n"
+                     f"📝 **Description**: {description}\n"
+                     f"🔑 **Permissions**:\n{permissions_text}"
+            )]
+        
+        elif name == "list_roles":
+            roles_text = "👥 **Available Roles and Permissions**:\n\n"
+            
+            for role in RoleType:
+                permissions = get_role_permissions(role)
+                description = get_role_description(role)
+                permissions_list = ", ".join([perm.value for perm in sorted(permissions)])
+                
+                roles_text += f"**{role.value.title()}**:\n"
+                roles_text += f"  Description: {description}\n"
+                roles_text += f"  Permissions: {permissions_list}\n\n"
+            
+            return [types.TextContent(
+                type="text",
+                text=roles_text
+            )]
+        
         elif name == "sync_to_trello":
             if trello_mode == TrelloMode.NONE:
                 return [types.TextContent(
@@ -1047,32 +1241,66 @@ async def handle_call_tool(
         )]
 
 async def main():
-    # Load existing data from local storage
-    load_tasks_locally()
-    load_transitions_locally()
+    logger.info("Starting main function...")
     
-    # Initialize Trello client
-    if init_trello_client():
-        if trello_mode == TrelloMode.MCP:
-            print("✅ MCP Trello integration initialized", file=sys.stderr)
-        elif trello_mode == TrelloMode.DIRECT_API:
-            print("✅ Direct Trello API integration initialized", file=sys.stderr)
+    try:
+        # Load existing data from local storage
+        logger.info("Loading existing data from local storage...")
+        load_tasks_locally()
+        load_transitions_locally()
+        logger.info(f"Loaded {len(tasks)} tasks and {len(transitions)} transitions")
+        
+        # Initialize Trello client
+        logger.info("Initializing Trello integration...")
+        if init_trello_client():
+            if trello_mode == TrelloMode.MCP:
+                logger.info("MCP Trello integration initialized")
+            elif trello_mode == TrelloMode.DIRECT_API:
+                logger.info("Direct Trello API integration initialized")
+            else:
+                logger.warning("Trello integration not available - using local storage")
         else:
-            print("⚠️ Trello integration not available - using local storage", file=sys.stderr)
-    else:
-        print("⚠️ Trello integration not available - using local storage", file=sys.stderr)
-    
-    # Run the server using stdin/stdout streams
-    async with mcp.server.stdio.stdio_server() as (read_stream, write_stream):
-        await server.run(
-            read_stream,
-            write_stream,
-            InitializationOptions(
-                server_name="task-orchectrator-mcp",
-                server_version="0.1.0",
-                capabilities=server.get_capabilities(
-                    notification_options=NotificationOptions(),
-                    experimental_capabilities={},
+            logger.warning("Trello integration not available - using local storage")
+        
+        # Run the server using stdin/stdout streams
+        logger.info("Starting MCP server with stdio transport...")
+        async with mcp.server.stdio.stdio_server() as (read_stream, write_stream):
+            logger.info("stdio transport established")
+            
+            capabilities = server.get_capabilities(
+                notification_options=NotificationOptions(),
+                experimental_capabilities={},
+            )
+            logger.info(f"Server capabilities: {capabilities}")
+            
+            await server.run(
+                read_stream,
+                write_stream,
+                InitializationOptions(
+                    server_name="task-orchectrator-mcp",
+                    server_version="0.3.0",
+                    capabilities=capabilities,
                 ),
-            ),
-        )
+            )
+            logger.info("Server run completed")
+            
+    except Exception as e:
+        logger.error(f"Fatal error in main function: {e}")
+        logger.error(f"Error type: {type(e).__name__}")
+        import traceback
+        logger.error(f"Traceback: {traceback.format_exc()}")
+        raise
+
+# Add entry point for direct execution
+if __name__ == "__main__":
+    logger.info("Starting MCP server as main module...")
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        logger.info("Server stopped by user (Ctrl+C)")
+    except Exception as e:
+        logger.error(f"Server failed to start: {e}")
+        logger.error(f"Error type: {type(e).__name__}")
+        import traceback
+        logger.error(f"Traceback: {traceback.format_exc()}")
+        sys.exit(1)

@@ -4,14 +4,14 @@ build-backend = "hatchling.build"
 
 [project]
 name = "task-orchectrator-mcp"
-version = "0.2.2"
-description = "A role-based task orchestrator with three-tier Trello integration for MCP"
+version = "0.3.0"
+description = "A Model Context Protocol (MCP) server for task orchestration with role-based workflow management and Trello integration"
 readme = "README.md"
 license = {text = "MIT"}
 authors = [
-    {name = "DaymaNKinG990", email = "xellaopromaster@yandex.ru"}
+    {name = "Dayman King", email = "daymanking990@gmail.com"}
 ]
-keywords = ["mcp", "task-orchestration", "trello", "project-management", "workflow", "model-context-protocol"]
+keywords = ["mcp", "task-management", "orchestration", "workflow", "trello", "ai", "model-context-protocol"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
@@ -29,15 +29,16 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/DaymaNKinG990/task-orchectrator-mcp"
-Repository = "https://github.com/DaymaNKinG990/task-orchectrator-mcp"
-Documentation = "https://github.com/DaymaNKinG990/task-orchectrator-mcp#readme"
-"Bug Tracker" = "https://github.com/DaymaNKinG990/task-orchectrator-mcp/issues"
+Homepage = "https://github.com/daymanking990/task-orchectrator-mcp"
+Repository = "https://github.com/daymanking990/task-orchectrator-mcp"
+Issues = "https://github.com/daymanking990/task-orchectrator-mcp/issues"
 
 [project.optional-dependencies]
 dev = [
-    "build",
-    "twine",
+    "pytest>=7.0.0",
+    "black>=23.0.0",
+    "isort>=5.12.0",
+    "mypy>=1.0.0",
 ]
 
 [tool.hatch.build.targets.wheel]
@@ -45,6 +46,8 @@ packages = ["src/task_orchectrator_mcp"]
 
 [dependency-groups]
 dev = [
-    "build",
-    "twine",
+    "pytest>=7.0.0",
+    "black>=23.0.0",
+    "isort>=5.12.0",
+    "mypy>=1.0.0",
 ]

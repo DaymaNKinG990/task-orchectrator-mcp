@@ -1,167 +1,120 @@
-# 🔧 Настройка Task Orchestrator MCP Server
+# 🔧 Task Orchestrator MCP Server Setup
 
-## 📋 Что нужно сделать
+## 📋 What you need to do
 
-### 1. Обновить конфигурацию MCP
+### 1. Update MCP Configuration
 
-Замените содержимое файла `c:\Users\xella\.cursor\mcp.json` на следующее:
+Replace the contents of your `.../.cursor\mcp.json` file with the following:
 
 ```json
 {
   "mcpServers": {
-    "context7": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@upstash/context7-mcp"
-      ],
-      "env": {
-        "DEFAULT_MINIMUM_TOKENS": ""
-      },
-      "alwaysAllow": [
-        "resolve-library-id",
-        "get-library-docs"
-      ]
-    },
-    "sequentialthinking": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@modelcontextprotocol/server-sequential-thinking"
-      ]
-    },
-    "memory": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@modelcontextprotocol/server-memory"
-      ]
-    },
-    "@21st-dev/magic": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@21st-dev/magic@latest"
-      ],
-      "env": {
-        "API_KEY": "your_api_key"
-      }
-    },
-    "trello-mcp": {
-      "command": "npx",
-      "args": ["@xenral/trello-mcp", "start"],
-      "env": {
-        "TRELLO_API_KEY": "12e27a975d66773ecaa13b17eaebc1f4",
-        "TRELLO_TOKEN": "a8631b90227fdc7277b23cdfd0def6cf1e710c",
-        "TRELLO_WORKING_BOARD_ID": "9hp09hXC"
-      }
-    },
     "task-orchestrator": {
-      "command": "uv",
-      "args": ["run", "task-orchectrator-mcp"],
-      "cwd": "C:\\Users\\xella\\PycharmProjects\\AiCheat2Shooter\\task-orchectrator-mcp",
+      "command": "npx",
+      "args": ["@daymanking990/task-orchectrator-mcp"],
       "env": {
-        "TRELLO_API_KEY": "12e27a975d66773ecaa13b17eaebc1f4",
-        "TRELLO_TOKEN": "a8631b90227fdc7277b23cdfd0def6cf1e710c",
-        "TRELLO_WORKING_BOARD_ID": "9hp09hXC"
+        "TRELLO_API_KEY": "your_trello_api_key_here",
+        "TRELLO_TOKEN": "your_trello_token_here",
+        "TRELLO_WORKING_BOARD_ID": "your_trello_board_id_here"
       }
     }
   }
 }
 ```
 
-### 2. Перезапустить Cursor
+### 2. Restart Cursor
 
-После обновления конфигурации перезапустите Cursor, чтобы изменения вступили в силу.
+After updating the configuration, restart Cursor for the changes to take effect.
 
-## 🎮 Как использовать
+## 🎮 How to use
 
-### Команды для управления:
+### Management commands:
 
 ```
-"Создай задачу: Добавить авторизацию - Реализовать систему входа пользователей"
-"Переключись в режим аналитика"
-"Переключись в режим архитектора"
-"Переключись в режим программиста"
-"Верни управление Оркестратору"
-"Покажи статус системы"
-"Покажи список задач"
-"Синхронизируй задачи с Trello"
+"Create task: Add authentication - Implement user login system"
+"Switch to analyst mode"
+"Switch to architect mode"
+"Switch to coder mode"
+"Return control to Orchestrator"
+"Show system status"
+"Show task list"
+"Sync tasks with Trello"
 ```
 
-### Доступные инструменты MCP:
+### Available MCP tools:
 
-- `create_task` - создать задачу (только Оркестратор)
-- `assign_task` - назначить задачу роли (только Оркестратор)
-- `complete_task` - завершить задачу (текущая роль)
-- `switch_role` - переключиться на другую роль (только Оркестратор)
-- `return_to_orchestrator` - вернуть управление Оркестратору
-- `get_status` - получить статус системы
-- `list_tasks` - список задач
-- `sync_to_trello` - синхронизировать задачи с Trello (если доступно)
+- `create_task` - create a task (Orchestrator, Architect, Analyst)
+- `assign_task` - assign a task to a role (Orchestrator, Architect)
+- `complete_task` - complete a task (current role)
+- `switch_role` - switch to another role (Orchestrator only)
+- `return_to_orchestrator` - return control to Orchestrator
+- `get_status` - get system status
+- `list_tasks` - list all tasks
+- `sync_to_trello` - sync tasks with Trello (if available)
+- `show_role_permissions` - show current role permissions
+- `list_roles` - list all available roles
 
-## 🔗 Trello Интеграция
+## 🔗 Trello Integration
 
-### Автоматическое создание карточек:
-- При создании задачи автоматически создается карточка в Trello
-- Карточки перемещаются между списками в зависимости от статуса задачи
-- Описание карточки обновляется при изменении статуса
+### Automatic card creation:
+- When a task is created, a Trello card is automatically created
+- Cards move between lists depending on task status
+- Card description is updated when task status changes
 
-### Списки в Trello:
-- **To Do** - новые задачи
-- **In Progress** - задачи в работе
-- **Review** - задачи на проверке
-- **Done** - завершенные задачи
-- **Blocked** - заблокированные задачи
+### Trello lists:
+- **To Do** - new tasks
+- **In Progress** - tasks in progress
+- **Review** - tasks under review
+- **Done** - completed tasks
+- **Blocked** - blocked tasks
 
-## 🔍 Проверка работы
+## 🔍 Verification
 
-После настройки вы должны увидеть в Cursor:
-- Новый MCP сервер `task-orchestrator` в списке доступных серверов
-- Возможность использовать команды управления ролями
-- Автоматическое переключение между ролями
-- Интеграцию с Trello (если настроены правильные ключи)
+After setup, you should see in Cursor:
+- New MCP server `task-orchestrator` in the list of available servers
+- Ability to use role management commands
+- Automatic role switching
+- Trello integration (if proper keys are configured)
 
-## 🚨 Возможные проблемы
+## 🚨 Possible issues
 
-### 1. Путь к файлу
-Убедитесь, что путь `C:\\Users\\xella\\PycharmProjects\\AiCheat2Shooter\\task-orchectrator-mcp` соответствует вашему проекту.
+### 1. File path
+Make sure the path in your configuration matches your project structure.
 
-### 2. UV не найден
-Убедитесь, что UV установлен и доступен в PATH.
+### 2. UV not found
+Make sure UV is installed and available in PATH.
 
-### 3. Права доступа
-Убедитесь, что у Cursor есть права на выполнение UV команд.
+### 3. Permissions
+Make sure Cursor has permission to execute UV commands.
 
-### 4. Trello API ключи
-Если Trello интеграция не работает:
-- Проверьте правильность API ключа и токена
-- Убедитесь, что доска существует и доступна
-- Проверьте права доступа к доске
+### 4. Trello API keys
+If Trello integration doesn't work:
+- Check the correctness of API key and token
+- Make sure the board exists and is accessible
+- Check board access permissions
 
-## ✅ Готово!
+## ✅ Done!
 
-После настройки ролевая система будет полностью интегрирована в Cursor и готова к использованию!
+After setup, the role-based system will be fully integrated into Cursor and ready to use!
 
-## 🧪 Тестирование
+## 🧪 Testing
 
-Для тестирования сервера используйте команду:
+To test the server, use the command:
 ```bash
-cd task-orchectrator-mcp
-uv run task-orchectrator-mcp
+npx @daymanking990/task-orchectrator-mcp
 ```
 
-Сервер запустится и будет готов к работе через MCP протокол.
+The server will start and be ready to work through the MCP protocol.
 
-## 🔧 Дополнительные возможности
+## 🔧 Additional features
 
-### Синхронизация с Trello:
-- Автоматическое создание карточек при создании задач
-- Обновление статуса карточек при изменении статуса задач
-- Перемещение карточек между списками
-- Синхронизация всех существующих задач
+### Trello synchronization:
+- Automatic card creation when tasks are created
+- Card status updates when task status changes
+- Card movement between lists
+- Synchronization of all existing tasks
 
-### Управление зависимостями:
-- Проверка зависимостей перед назначением задач
-- Блокировка задач с незавершенными зависимостями
-- Отслеживание связей между задачами 
+### Dependency management:
+- Dependency checking before task assignment
+- Blocking tasks with incomplete dependencies
+- Tracking relationships between tasks 

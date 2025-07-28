@@ -1,55 +1,55 @@
-# 🚀 Публикация MCP сервера СЕЙЧАС
+# 🚀 Publishing MCP Server NOW
 
-## Что нужно сделать:
+## What needs to be done:
 
-### 1. Создать npm аккаунт (если нет)
+### 1. Create npm account (if you don't have one)
 ```bash
-# Перейти на https://www.npmjs.com/signup
-# Создать аккаунт
+# Go to https://www.npmjs.com/signup
+# Create an account
 ```
 
-### 2. Войти в npm
+### 2. Login to npm
 ```bash
 npm login
-# Ввести username, password, email
+# Enter username, password, email
 ```
 
-### 3. Опубликовать на npm
+### 3. Publish to npm
 ```bash
 npm publish --access public
 ```
 
-### 4. Зарегистрировать в официальном реестре MCP
+### 4. Register in the official MCP registry
 
-#### Вариант A: Через веб-интерфейс
-1. Перейти на https://registry.modelcontextprotocol.io
-2. Войти через GitHub
-3. Добавить новый сервер с данными из `server.json`
+#### Option A: Through web interface
+1. Go to https://registry.modelcontextprotocol.io
+2. Login through GitHub
+3. Add new server with data from `server.json`
 
-#### Вариант B: Через API
+#### Option B: Through API
 ```bash
-# Создать GitHub токен на https://github.com/settings/tokens
-# Использовать MCP Publisher Tool (если доступен)
+# Create GitHub token at https://github.com/settings/tokens
+# Use MCP Publisher Tool (if available)
 ```
 
-## Проверка после публикации:
+## Verification after publishing:
 
 ### npm
 ```bash
-# Установить с npm
+# Install from npm
 npm install -g @daymanking990/task-orchectrator-mcp
 
-# Протестировать
+# Test
 task-orchectrator-mcp
 ```
 
-### Реестр MCP
+### MCP Registry
 ```bash
-# Проверить в реестре
+# Check in registry
 curl https://registry.modelcontextprotocol.io/v0/servers | grep task-orchectrator
 ```
 
-## Использование в mcp.json:
+## Usage in mcp.json:
 
 ```json
 {
@@ -67,9 +67,9 @@ curl https://registry.modelcontextprotocol.io/v0/servers | grep task-orchectrato
 }
 ```
 
-## Готово! 🎉
+## Done! 🎉
 
-После публикации ваш MCP сервер будет доступен:
+After publishing, your MCP server will be available:
 - **npm**: `npm install @daymanking990/task-orchectrator-mcp`
 - **npx**: `npx @daymanking990/task-orchectrator-mcp`
-- **Реестр MCP**: https://registry.modelcontextprotocol.io 
+- **MCP Registry**: https://registry.modelcontextprotocol.io 
