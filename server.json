@@ -1,0 +1,32 @@
+{
+  "name": "io.github.daymanking990/task-orchectrator-mcp",
+  "description": "A role-based task orchestrator with three-tier Trello integration for MCP. Supports Orchestrator, Architect, Coder, Analyst, and DevOps roles with automatic task lifecycle management and Trello integration through MCP Server, Direct API, or Local Storage modes.",
+  "version_detail": {
+    "version": "0.2.0"
+  },
+  "packages": [
+    {
+      "registry_name": "npm",
+      "name": "@daymanking990/task-orchectrator-mcp",
+      "version": "0.2.0",
+      "environment_variables": [
+        {
+          "name": "TRELLO_API_KEY",
+          "description": "Trello API Key for direct API integration (optional)"
+        },
+        {
+          "name": "TRELLO_TOKEN",
+          "description": "Trello Token for direct API integration (optional)"
+        },
+        {
+          "name": "TRELLO_WORKING_BOARD_ID",
+          "description": "Trello Board ID for direct API integration (optional)"
+        }
+      ]
+    }
+  ],
+  "repository": {
+    "url": "https://github.com/DaymaNKinG990/task-orchectrator-mcp",
+    "source": "github"
+  }
+} 
