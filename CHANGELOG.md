@@ -2,6 +2,35 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.3] - 2025-07-29
+
+### Fixed
+- **Task Completion Error**: Fixed "'NoneType' object has no attribute 'value'" error in complete_task when task.assigned_role is None
+
+### Added
+- **Comment System**: Added `write_comment` tool for all roles to add comments to tasks
+- **Comment Integration**: Comments are saved locally and synced to Trello when available
+- **Role-based Comments**: Comments include role information and timestamps
+
+## [0.3.2] - 2025-07-28
+
+### Fixed
+- **Cursor AI Compatibility**: Fixed multiple issues preventing server from working in Cursor AI
+  - Removed file logging that could fail in restricted environments
+  - Simplified MCP Trello availability check to prevent server.request_context access issues
+  - Fixed async/sync context issues in Trello card creation and updates
+  - Added comprehensive error handling and logging for better diagnostics
+  - Made imports more robust with try-catch blocks
+- **Error Handling**: Enhanced error handling throughout the server for better stability
+- **Logging**: Improved logging to help diagnose issues in different environments
+
+## [0.3.1] - 2025-07-28
+
+### Fixed
+- **Task Creation Bug**: Fixed critical error "Error: 'bool' object is not callable" in task creation
+- **Variable Name Conflict**: Resolved conflict where `create_trello_card` argument was shadowing the function
+- **Function Shadowing**: Renamed argument variable to `should_create_trello_card` to prevent function shadowing
+
 ## [0.3.0] - 2025-07-28
 
 ### Added

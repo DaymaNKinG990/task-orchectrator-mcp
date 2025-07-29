@@ -1,10 +1,10 @@
 {
   "name": "@daymanking990/task-orchectrator-mcp",
-  "version": "0.3.0",
+  "version": "0.3.3",
   "description": "A Model Context Protocol (MCP) server for task orchestration with role-based workflow management and Trello integration",
   "main": "bin/index.js",
   "bin": {
-    "task-orchectrator-mcp": "./bin/index.js"
+    "task-orchectrator-mcp": "bin/index.js"
   },
   "scripts": {
     "postinstall": "node scripts/postinstall.js"

@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "task-orchectrator-mcp"
-version = "0.3.0"
+version = "0.3.3"
 description = "A Model Context Protocol (MCP) server for task orchestration with role-based workflow management and Trello integration"
 readme = "README.md"
 license = {text = "MIT"}
